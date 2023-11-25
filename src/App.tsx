@@ -1,37 +1,10 @@
 // App.tsx
 import { Table, TableBody, TableCell, TableRow } from "./component/Table";
+import { abjad } from "./constant/abjad";
 import HillCipher from "./HillCipher";
 import HillCipherDecrypt from "./HillCipherDecrypt";
 
 function App() {
-	const abjad: string[] = [
-		"A",
-		"B",
-		"C",
-		"D",
-		"E",
-		"F",
-		"G",
-		"H",
-		"I",
-		"J",
-		"K",
-		"L",
-		"M",
-		"N",
-		"O",
-		"P",
-		"Q",
-		"R",
-		"S",
-		"T",
-		"U",
-		"V",
-		"W",
-		"X",
-		"Y",
-		"Z",
-	];
 	return (
 		<div className="container mx-auto max-w-7xl">
 			<Table>

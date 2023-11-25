@@ -65,6 +65,8 @@ const HillCipher = () => {
 				type="text"
 				value={plaintext}
 				onChange={(e) => setPlaintext(e.target.value)}
+				maxLength={3}
+				minLength={3}
 			/>
 			<button onClick={encrypt}>Encrypt</button>
 			<p>Encrypted Text: {encryptedText}</p>
