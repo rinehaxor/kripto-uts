@@ -7,7 +7,8 @@ import HillCipherDecrypt from "./HillCipherDecrypt";
 function App() {
 	return (
 		<div className="container mx-auto max-w-7xl">
-			<Table>
+			<h1 className="text-3xl font-bold text-center mt-10">Hill Cipher</h1>
+			<Table className="my-10">
 				<TableBody>
 					<TableRow>
 						{abjad.map((item, index) => {
@@ -21,8 +22,10 @@ function App() {
 					</TableRow>
 				</TableBody>
 			</Table>
-			<HillCipher />
-			<HillCipherDecrypt />
+			<div className="w-full flex ">
+				<HillCipher />
+				<HillCipherDecrypt />
+			</div>
 		</div>
 	);
 }

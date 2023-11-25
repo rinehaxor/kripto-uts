@@ -1,9 +1,21 @@
 // HillCipher.tsx
 
 import { useState } from "react";
+import { Button } from "./component/Button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "./component/Form";
+import { Input } from "./component/Input";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
 
 const HillCipher = () => {
-	const [plaintext, setPlaintext] = useState<string>("");
 	const [encryptedText, setEncryptedText] = useState<string>("");
 
 	// Fungsi untuk mengalikan matriks kunci dengan vektor teks
@@ -47,7 +59,7 @@ const HillCipher = () => {
 	};
 
 	// variabel key yang berisi array 2 dimensi yaitu matriks yang diberikan dibawah ini adalah 3x3
-	const encrypt = () => {
+	const encrypt = (plaintext: string) => {
 		const key: number[][] = [
 			[2, 8, 15],
 			[7, 4, 17],
@@ -58,18 +70,46 @@ const HillCipher = () => {
 		const encryptedVector = multiplyMatrixWithVector(key, plaintextVector); //mengalikan matriks kunci dengan vektor plaintext. perkalian ini (dilakukan dalam aritmetika modulo) menghasilkan vektor baru yang mewakili teks yang telah dienkripsi.
 		setEncryptedText(vectorToString(encryptedVector)); //mengonversi vektor numerik yang dihasilkan kembali menjadi string teks
 	};
-
+	const FormSchema = z.object({
+		plaintext: z
+			.string()
+			.min(3, {
+				message: "Harus 3 Huruf",
+			})
+			.max(3, {
+				message: "Maksimal 3 Huruf",
+			}),
+	});
+	const form = useForm<z.infer<typeof FormSchema>>({
+		resolver: zodResolver(FormSchema),
+		defaultValues: {
+			plaintext: "",
+		},
+	});
+	function onSubmit(data: z.infer<typeof FormSchema>) {
+		encrypt(data.plaintext);
+	}
 	return (
-		<div>
-			<input
-				type="text"
-				value={plaintext}
-				onChange={(e) => setPlaintext(e.target.value)}
-				maxLength={3}
-				minLength={3}
-			/>
-			<button onClick={encrypt}>Encrypt</button>
-			<p>Encrypted Text: {encryptedText}</p>
+		<div className="w-full">
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+					<FormField
+						control={form.control}
+						name="plaintext"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Dekripsi</FormLabel>
+								<FormControl>
+									<Input placeholder="Plain Text" {...field} maxLength={3} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<Button type="submit">Enkrip</Button>
+					<p>{encryptedText}</p>
+				</form>
+			</Form>
 		</div>
 	);
 };
