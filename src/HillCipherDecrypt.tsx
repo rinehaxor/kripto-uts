@@ -1,10 +1,61 @@
-// HillCipher.tsx
-
+import { create, all } from "mathjs";
 import { useState } from "react";
 
-const HillCipher = () => {
+const HillCipherDecrypt = () => {
 	const [plaintext, setPlaintext] = useState<string>("");
-	const [encryptedText, setEncryptedText] = useState<string>("");
+	const [decryptText, setdecryptText] = useState<string>("");
+	const math = create(all);
+	const getCofactor = (mat, p, q) => {
+		const size = mat.length;
+		const temp = [];
+
+		for (let row = 0; row < size; row++) {
+			const currentRow = [];
+			for (let col = 0; col < size; col++) {
+				if (row !== p && col !== q) {
+					currentRow.push(mat[row][col]);
+				}
+			}
+			if (currentRow.length > 0) {
+				temp.push(currentRow);
+			}
+		}
+
+		const cofactor = math.det(temp);
+		return ((p + q) % 2 === 0 ? 1 : -1) * cofactor;
+	};
+
+	const getCofactorMatrix = (mat) => {
+		const size = mat.length;
+		const cofactorMat = [];
+
+		for (let row = 0; row < size; row++) {
+			const currentRow = [];
+			for (let col = 0; col < size; col++) {
+				const cofactor = getCofactor(mat, row, col);
+				currentRow.push(cofactor);
+			}
+			cofactorMat.push(currentRow);
+		}
+
+		return cofactorMat;
+	};
+	const getAdjugateMatrix = (mat) => {
+		const cofactorMat = getCofactorMatrix(mat);
+		const adjugateMat = math.transpose(cofactorMat);
+		return adjugateMat;
+	};
+
+	const adjugateMatrix = getAdjugateMatrix([
+		[2, 8, 15],
+		[7, 4, 17],
+		[8, 13, 6],
+	]);
+
+	const x = 5;
+	const productMatrix = adjugateMatrix.map((row) =>
+		row.map((element) => math.mod(math.multiply(element, x), 26))
+	);
 
 	// Fungsi untuk mengalikan matriks kunci dengan vektor teks
 	//memiliki 2 param key dan messageVector yang digunakan untuk menambil array 1 diemensi lalu dikalikan dengan key
@@ -47,16 +98,13 @@ const HillCipher = () => {
 	};
 
 	// variabel key yang berisi array 2 dimensi yaitu matriks yang diberikan dibawah ini adalah 3x3
-	const encrypt = () => {
-		const key: number[][] = [
-			[2, 8, 15],
-			[7, 4, 17],
-			[8, 13, 6],
-		];
-
+	const decrypt = () => {
 		const plaintextVector = stringToVector(plaintext); // mengonversi string plaintext menjadi vektor numerik. Setiap huruf diubah menjadi nilai numeriknya sesuai posisi dalam alfabet (A=0, B=1, ..., Z=25
-		const encryptedVector = multiplyMatrixWithVector(key, plaintextVector); //mengalikan matriks kunci dengan vektor plaintext. perkalian ini (dilakukan dalam aritmetika modulo) menghasilkan vektor baru yang mewakili teks yang telah dienkripsi.
-		setEncryptedText(vectorToString(encryptedVector)); //mengonversi vektor numerik yang dihasilkan kembali menjadi string teks
+		const decryptVector = multiplyMatrixWithVector(
+			productMatrix,
+			plaintextVector
+		); //mengalikan matriks kunci dengan vektor plaintext. perkalian ini (dilakukan dalam aritmetika modulo) menghasilkan vektor baru yang mewakili teks yang telah dienkripsi.
+		setdecryptText(vectorToString(decryptVector)); //mengonversi vektor numerik yang dihasilkan kembali menjadi string teks
 	};
 
 	return (
@@ -66,10 +114,9 @@ const HillCipher = () => {
 				value={plaintext}
 				onChange={(e) => setPlaintext(e.target.value)}
 			/>
-			<button onClick={encrypt}>Encrypt</button>
-			<p>Encrypted Text: {encryptedText}</p>
+			<button onClick={decrypt}>Decrypt</button>
+			<p>Decrypt Text: {decryptText}</p>
 		</div>
 	);
 };
-
-export default HillCipher;
+export default HillCipherDecrypt;
