@@ -14,6 +14,7 @@ import { Input } from "./component/Input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/src/zod.js";
+import { key } from "./constant/key";
 
 const HillCipher = () => {
 	const [encryptedText, setEncryptedText] = useState<string>("");
@@ -60,12 +61,6 @@ const HillCipher = () => {
 
 	// variabel key yang berisi array 2 dimensi yaitu matriks yang diberikan dibawah ini adalah 3x3
 	const encrypt = (plaintext: string) => {
-		const key: number[][] = [
-			[2, 8, 15],
-			[7, 4, 17],
-			[8, 13, 6],
-		];
-
 		const plaintextVector = stringToVector(plaintext); // mengonversi string plaintext menjadi vektor numerik. Setiap huruf diubah menjadi nilai numeriknya sesuai posisi dalam alfabet (A=0, B=1, ..., Z=25
 		const encryptedVector = multiplyMatrixWithVector(key, plaintextVector); //mengalikan matriks kunci dengan vektor plaintext. perkalian ini (dilakukan dalam aritmetika modulo) menghasilkan vektor baru yang mewakili teks yang telah dienkripsi.
 		setEncryptedText(vectorToString(encryptedVector)); //mengonversi vektor numerik yang dihasilkan kembali menjadi string teks
@@ -89,6 +84,7 @@ const HillCipher = () => {
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		encrypt(data.plaintext);
 	}
+
 	return (
 		<div className="w-full">
 			<Form {...form}>
@@ -98,18 +94,22 @@ const HillCipher = () => {
 						name="plaintext"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Dekripsi</FormLabel>
+								<FormLabel className="uppercase font-bold">Enkripsi :</FormLabel>
 								<FormControl>
 									<Input placeholder="Plain Text" {...field} maxLength={3} />
 								</FormControl>
-								<FormMessage />
+								<FormMessage className="text-red-500" />
 							</FormItem>
 						)}
 					/>
-					<Button type="submit">Enkrip</Button>
-					<p>{encryptedText}</p>
+					<Button className="bg-blue-500 text-white" type="submit">
+						Enkrip
+					</Button>
 				</form>
 			</Form>
+			<div className="flex gap-5 my-5 font-bold">
+				<h1 className="uppercase">hasil enkripsi</h1> : <p>{encryptedText}</p>
+			</div>
 		</div>
 	);
 };
